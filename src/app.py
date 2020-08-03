@@ -1,5 +1,6 @@
 import time
 import uuid
+import datetime
 
 from flask.app import Flask
 from flask import jsonify
@@ -7,8 +8,6 @@ from flask_api import status
 
 
 app = Flask('delay-response-server')
-
-call_count = 0
 
 
 @app.route('/delay/v1/<int:delay_time>')
@@ -18,14 +17,11 @@ def delay_response(delay_time: int):
             'error': 'delay time path parameter should be 0 ~ 10 seconds.'
         }), status.HTTP_400_BAD_REQUEST
 
-    global call_count
-    call_count %= 1000
-    call_count += 1
     time.sleep(delay_time)
     return jsonify({
         'id': uuid.uuid1(),
         'delayTime': delay_time,
-        'callCount': call_count
+        'called_at': datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S,%f')
     }), status.HTTP_200_OK
 
 
